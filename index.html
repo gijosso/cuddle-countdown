@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuddle Countdown</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet'>
+    <style>
+        body {
+            font-family: 'Vollkorn', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        h1 {
+            margin: 0;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 8vw;
+        }
+        #days, #hours, #minutes, #seconds, #nights {
+            color: #333;
+            font-size: 10vw;
+            font-weight: bold;
+        }
+        #nights {
+            font-size: 7.5vw;
+        }
+        #cuddle {
+            font-size: 3vw;
+        }
+        #progress-bar {
+            width: 75vw;
+            height: 5vw;
+            border-radius: 10px;
+            margin-top: 10vw;
+            background-color: #ddd;
+        }
+        #progress {
+            position: relative;
+            width: 0%;
+            height: 100%;
+            transition: width 1s ease-in-out, opacity 1s ease-in-out;
+            background-color: #f6bcff;
+            opacity: 0;
+            border-radius: 10px;
+        }
+        #progress::after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: -2.5vw;
+            right: -5vw;
+            width: 10vw;
+            height: 10vw;
+            background-image: url('./travel.svg');
+            background-size: cover;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #date-row {
+            display: flex;
+            justify-content: space-between;
+            width: 75vw;
+            font-size: 3vw;
+            margin-top: 1vw;
+        }
+    </style>
+</head>
+<body>
+    <div class="column">
+        <div class="row">
+            <div id="days">00</div>d
+            &nbsp;<div id="hours">00</div>h
+            &nbsp;<div id="minutes">00</div>m
+            &nbsp;<div id="seconds">00</div>s
+        </div>
+        <div class="row">
+            <div id="nights">0</div>&nbsp;night<div id="plural"></div>&nbsp;to go
+        </div>
+        <div id="cuddle">* until our next cuddle</div>
+
+        <div id="progress-bar">
+            <div id="progress"></div>
+        </div>
+        <div id="date-row">
+            <div>December 5</div>
+            <div>January 13</div>
+        </div>
+    </div>
+
+    <script>
+        function countdown() {
+            const lastCuddleDate = new Date('December 5, 2024 16:00:00').getTime();
+            const nextCuddleDate = new Date('January 13, 2025 21:00:00').getTime();
+            const now = new Date();
+            const percentage = (now.getTime() - lastCuddleDate) / (nextCuddleDate - lastCuddleDate) * 100;
+            const distance = nextCuddleDate - now.getTime();
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const nights = days !== 0 ? days : (hours <= 8 ) | 0;
+            
+            if (distance < 0) {
+                clearInterval(interval);
+            } else {
+                document.getElementById('days').innerHTML = days.toString().padStart(2, '0');
+                document.getElementById('hours').innerHTML = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').innerHTML = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').innerHTML = seconds.toString().padStart(2, '0');
+                document.getElementById('nights').innerHTML = nights;
+                document.getElementById('plural').innerHTML = nights > 1 ? 's' : '';
+                document.getElementById('progress').style.width = percentage + '%';
+                document.getElementById('progress').style.opacity = 1;
+            }
+        }
+
+        const interval = setInterval(countdown, 1000);
+    </script>
+</body>
+</html>
